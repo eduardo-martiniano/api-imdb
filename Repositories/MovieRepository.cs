@@ -27,22 +27,22 @@ namespace api_imdb.Repositories
         public async Task<List<Movie>> GetAll()
         {
             return await _context.Movies
-                                 .Include(m => m.Actors)
+                                 .Include(m => m.Actings)
                                  .ToListAsync();
         }
 
         public async Task<List<Movie>> GetByFilters(string title, string genre, Actor actor, int limit, int offset)
         {
-            var query =  _context.Movies.Include(m => m.Director).AsQueryable();
+            var query =  _context.Movies.Include(m => m.Actings).AsQueryable();
 
             if (!string.IsNullOrEmpty(title))
-                query = query.Include(m => m.Director).Where(m => m.Title == title).AsQueryable();
+                query = query.Include(m => m.Actings).Where(m => m.Title == title).AsQueryable();
             
             if (!string.IsNullOrEmpty(genre))
-                query = query.Include(m => m.Director).Where(m => m.Genre == genre).AsQueryable();
+                query = query.Include(m => m.Actings).Where(m => m.GenreName == genre).AsQueryable();
             
-            if (actor != null)
-                query = query.Include(m => m.Director).Where(m => m.Actors.Contains(actor)).AsQueryable();
+            // if (actor != null)
+            //     query = query.Include(m => m.Actings).Where(m => m.Actings.).AsQueryable();
 
             return await query.Skip((offset * limit)).Take(limit).ToListAsync();
 
