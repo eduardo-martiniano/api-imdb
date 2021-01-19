@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api_imdb.Contracts;
 using api_imdb.Models;
+using api_imdb.Models.Jsons;
 using api_imdb.Models.ViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -30,8 +31,9 @@ namespace api_imdb.Controllers
         [Route("")]
         public async Task<IActionResult> GetAll()
         {
-            var movies = _mapper.Map<IEnumerable<MovieViewModel>>(await _movieRepository.GetAll());
-            return Ok(movies);
+            var movies = await _movieRepository.GetAll();
+            var moviesJson = movies.Select(x => new MovieJson(x)).ToList();
+            return Ok(moviesJson);
         }
 
         [HttpPost]
