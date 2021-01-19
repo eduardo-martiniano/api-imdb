@@ -24,13 +24,14 @@ namespace api_imdb.Repositories
             return movie;
         }
 
-        public async Task<List<Movie>> GetAll()
+        public async Task<List<Movie>> GetAll(int limit, int offset)
         {
-            var movies = await _context.Movies
-                                 .Include(m => m.Actings)
-                                 .ThenInclude(a => a.Actor)
-                                 .ToListAsync();
-            return movies;
+            return await _context.Movies
+                            .Include(m => m.Actings)
+                            .ThenInclude(a => a.Actor)
+                            .Skip(offset * limit)
+                            .Take(limit)
+                            .ToListAsync();
         }
 
         public async Task<List<Movie>> GetByFilters(string title, string genre, Actor actor, int limit, int offset)

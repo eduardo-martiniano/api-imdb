@@ -29,9 +29,9 @@ namespace api_imdb.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int limit = 10, [FromQuery] int offset = 0)
         {
-            var movies = await _movieRepository.GetAll();
+            var movies = await _movieRepository.GetAll(limit, offset);
             var moviesJson = movies.Select(x => new MovieJson(x)).ToList();
             return Ok(moviesJson);
         }
