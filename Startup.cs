@@ -2,7 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api_imdb.Contracts;
+using api_imdb.Contracts.IRepositories;
 using api_imdb.Data;
+using api_imdb.Repositories;
+using api_imdb.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,10 +34,17 @@ namespace api_imdb
         {
             services.AddSwaggerGen();
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddDbContext<Context>(options => 
             {
                 options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Database;Integrated Security=True;"); 
             });
+
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IActorRepository, ActorRepository>();
+            services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<IActingRepository, ActingRepository>();
 
             services.AddControllers();
         }
