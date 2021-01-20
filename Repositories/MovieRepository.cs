@@ -29,6 +29,8 @@ namespace api_imdb.Repositories
             return await _context.Movies
                             .Include(m => m.Actings)
                             .ThenInclude(a => a.Actor)
+                            .Include(m => m.Ratings)
+                            .OrderByDescending(m => m.Ratings.Count)
                             .Skip(offset * limit)
                             .Take(limit)
                             .ToListAsync();
@@ -53,7 +55,12 @@ namespace api_imdb.Repositories
 
         public async Task<Movie> GetById(int id)
         {
-            return await _context.Movies.Where(m => m.Id == id).FirstOrDefaultAsync();
+            return await _context.Movies
+                    .Include(m => m.Actings)
+                    .ThenInclude(a => a.Actor)
+                    .Include(m => m.Ratings)
+                    .Where(m => m.Id == id)
+                    .FirstOrDefaultAsync();
         }
 
         public async Task<Movie> Update(int id, Movie movie)

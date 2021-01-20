@@ -10,5 +10,6 @@ namespace api_imdb.Contracts
     public interface IMovieService
     {
         Task<Movie> CreateMovie(MovieViewModel model);
+        Task RateMovie(int movieId, int note);
     }
 }

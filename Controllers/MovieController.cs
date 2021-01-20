@@ -48,5 +48,20 @@ namespace api_imdb.Controllers
             return Ok(movieJson);
 
         }
+
+        [HttpPost]
+        [Route("rate-movie")]
+        public async Task<IActionResult> RateMovie([FromQuery] int movieId, [FromQuery] int note)
+        {
+            if (note < 0 || note > 4) return BadRequest("Nota invalida! Digite uma nota entre 0-4");
+
+            var movie = await _movieRepository.GetById(movieId);
+
+            if (movie == null) return BadRequest("Filme não encontrado");
+
+            await _movieService.RateMovie(movieId, note);
+
+            return Ok(new MovieJson(movie));
+        }
     }
 }

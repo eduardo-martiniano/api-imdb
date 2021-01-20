@@ -15,14 +15,16 @@ namespace api_imdb.Services
         private readonly IMovieRepository _movieRepository;
         private readonly IActorRepository _actorRepository;
         private readonly IActingRepository _actingRepository;
+        private readonly IRatingRepository _ratingRepository;
         private readonly IMapper _mapper; 
 
-        public MovieService(IMovieRepository movieRepository, IActorRepository actorRepository, IMapper mapper, IActingRepository actingRepository)
+        public MovieService(IMovieRepository movieRepository, IActorRepository actorRepository, IMapper mapper, IActingRepository actingRepository, IRatingRepository ratingRepository)
         {
             _movieRepository = movieRepository;
             _actorRepository = actorRepository;
             _mapper = mapper;
             _actingRepository = actingRepository;
+            _ratingRepository = ratingRepository;
         }
 
         public async Task<Movie> CreateMovie(MovieViewModel model)
@@ -38,6 +40,11 @@ namespace api_imdb.Services
             }
 
             return movie;
+        }
+
+        public async Task RateMovie(int movieId, int note)
+        {
+            await _ratingRepository.Add(movieId, note);
         }
 
         private async Task<ActorViewModel> CreateActor(ActorViewModel model)

@@ -13,6 +13,8 @@ namespace api_imdb.Models.Jsons
         public string DirectorName { get; set; }
         public string GenreName { get; set; }
         public List<ActorJson> Actors { get; set; }
+        public int CountRates { get; set; }
+        public float Rating { get; set; }
 
         public MovieJson(Movie movie)
         {
@@ -23,6 +25,12 @@ namespace api_imdb.Models.Jsons
             
             if (movie.Actings != null)
                 Actors = movie.Actings.Select(a => new ActorJson(a.Actor)).ToList();
+
+            if (movie.Ratings != null && movie.Ratings.Any())
+            {
+                CountRates = movie.Ratings.Count();
+                Rating = (float) (movie.Ratings.Select(r => r.Note).Sum()) / CountRates;
+            }
         }
 
         public async Task ExecuteResultAsync(ActionContext context)
