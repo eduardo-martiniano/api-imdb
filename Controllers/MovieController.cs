@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api_imdb.Contracts;
 using api_imdb.Models;
 using api_imdb.Models.Jsons;
+using api_imdb.Models.Queries;
 using api_imdb.Models.ViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -29,9 +30,9 @@ namespace api_imdb.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> GetAll([FromQuery] int limit = 10, [FromQuery] int offset = 0)
+        public async Task<IActionResult> GetAll([FromQuery] MovieQuery query)
         {
-            var movies = await _movieRepository.GetAll(limit, offset);
+            var movies = await _movieRepository.GetAll(query);
             var moviesJson = movies.Select(x => new MovieJson(x)).ToList();
             return Ok(moviesJson);
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using api_imdb.Contracts;
 using api_imdb.Data;
 using api_imdb.Models;
+using api_imdb.Models.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace api_imdb.Repositories
@@ -24,15 +25,28 @@ namespace api_imdb.Repositories
             return movie;
         }
 
-        public async Task<List<Movie>> GetAll(int limit, int offset)
+        public async Task<List<Movie>> GetAll(MovieQuery query)
         {
-            return await _context.Movies
-                            .Include(m => m.Actings)
-                            .ThenInclude(a => a.Actor)
-                            .Include(m => m.Ratings)
+            var moviesQuery = _context.Movies
+                              .Include(m => m.Actings)
+                              .ThenInclude(a => a.Actor)
+                              .Include(m => m.Ratings)
+                              .AsQueryable();
+
+            if (!string.IsNullOrEmpty(query.DirectorName))
+                moviesQuery =  moviesQuery.Where(m => m.DirectorName.ToLower().Contains(query.DirectorName.ToLower())).AsQueryable();
+
+            if (!string.IsNullOrEmpty(query.Title))
+                moviesQuery = moviesQuery.Where(m => m.Title.ToLower().Contains(query.Title.ToLower())).AsQueryable();
+
+            if (!string.IsNullOrEmpty(query.Genre))
+                moviesQuery = moviesQuery.Where(m => m.GenreName.ToLower().Contains(query.Genre.ToLower())).AsQueryable();
+
+            return await moviesQuery
                             .OrderByDescending(m => m.Ratings.Count)
-                            .Skip(offset * limit)
-                            .Take(limit)
+                            .ThenBy(m => m.Title)
+                            .Skip(query.Offset * query.Limit)
+                            .Take(query.Limit)
                             .ToListAsync();
         }
 
