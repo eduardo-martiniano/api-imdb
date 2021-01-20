@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api_imdb.Configuration;
 using api_imdb.Contracts;
 using api_imdb.Contracts.IRepositories;
 using api_imdb.Data;
@@ -11,6 +12,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +43,8 @@ namespace api_imdb
                 options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Database;Integrated Security=True;"); 
             });
 
+            services.AddIdentityConfiguration(Configuration);
+
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IActorRepository, ActorRepository>();
             services.AddScoped<IMovieService, MovieService>();
@@ -59,9 +63,8 @@ namespace api_imdb
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
