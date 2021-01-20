@@ -42,6 +42,12 @@ namespace api_imdb.Repositories
             if (!string.IsNullOrEmpty(query.Genre))
                 moviesQuery = moviesQuery.Where(m => m.GenreName.ToLower().Contains(query.Genre.ToLower())).AsQueryable();
 
+            if (!string.IsNullOrEmpty(query.ActorName))
+            {
+                var actor = await GetActorByName(query.ActorName);
+                moviesQuery = moviesQuery.Where(m => m.Actings.Select(a => a.Actor).AsEnumerable().Contains(actor));
+            }
+                
             return await moviesQuery
                             .OrderByDescending(m => m.Ratings.Count)
                             .ThenBy(m => m.Title)
@@ -85,6 +91,13 @@ namespace api_imdb.Repositories
             await _context.SaveChangesAsync();
 
             return _movie;
+        }
+
+        private async Task<Actor> GetActorByName(string name)
+        {
+            return await _context.Actors
+                                 .Where(ac => ac.Name.ToLower().Contains(name.ToLower()))
+                                 .FirstOrDefaultAsync();
         }
     }
 }
