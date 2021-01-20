@@ -42,11 +42,11 @@ namespace api_imdb.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            if (model.Actors != null) await _movieService.CreateMovieWhithActor(model);
+            var movie = await _movieService.CreateMovie(model);
+            var movieJson = new MovieJson(movie);
 
-            return Ok(model);
+            return Ok(movieJson);
+
         }
-
-
     }
 }

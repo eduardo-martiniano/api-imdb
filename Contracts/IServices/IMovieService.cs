@@ -9,6 +9,6 @@ namespace api_imdb.Contracts
 {
     public interface IMovieService
     {
-        Task<MovieViewModel> CreateMovieWhithActor(MovieViewModel model);
+        Task<Movie> CreateMovie(MovieViewModel model);
     }
 }

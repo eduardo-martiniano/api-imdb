@@ -25,17 +25,31 @@ namespace api_imdb.Services
             _actingRepository = actingRepository;
         }
 
-        public async Task<MovieViewModel> CreateMovieWhithActor(MovieViewModel model)
+        public async Task<Movie> CreateMovie(MovieViewModel model)
         {
             var movie = await _movieRepository.Add(_mapper.Map<Movie>(model));
-            
+
+            if (!model.Actors.Any()) return movie;
+
             foreach (var actor in model.Actors)
             {
-                var _actor = await _actorRepository.Add(_mapper.Map<Actor>(actor));
-                await _actingRepository.AddRelation(new Acting {MovieId = movie.Id, ActorId = _actor.Id });
+                var _actor = await CreateActor(actor);
+                await CreateRelationMovieAndActor(movie.Id, _actor.Id);
             }
 
-            return  _mapper.Map<MovieViewModel>(movie);
+            return movie;
+        }
+
+        private async Task<ActorViewModel> CreateActor(ActorViewModel model)
+        {
+            var actor = await _actorRepository.Add(_mapper.Map<Actor>(model));
+
+            return _mapper.Map<ActorViewModel>(actor);
+        }
+
+        private async Task CreateRelationMovieAndActor(int movieId, int actorId)
+        {
+            await _actingRepository.AddRelation(new Acting { MovieId = movieId, ActorId = actorId });
         }
     }
 }

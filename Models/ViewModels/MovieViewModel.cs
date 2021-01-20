@@ -26,6 +26,10 @@ namespace api_imdb.Models.ViewModels
         [DisplayName("Genero")]
         public string GenreName { get; set; }
         public List<ActorViewModel> Actors { get; set; }
-
+        
+        public MovieViewModel()
+        {
+            Actors = new List<ActorViewModel>();
+        }
     }
 }

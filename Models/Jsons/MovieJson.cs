@@ -20,7 +20,9 @@ namespace api_imdb.Models.Jsons
             Title = movie.Title;
             DirectorName = movie.DirectorName;
             GenreName = movie.GenreName;
-            Actors = movie.Actings.Select(a => new ActorJson(a.Actor)).ToList();
+            
+            if (movie.Actings != null)
+                Actors = movie.Actings.Select(a => new ActorJson(a.Actor)).ToList();
         }
 
         public async Task ExecuteResultAsync(ActionContext context)
