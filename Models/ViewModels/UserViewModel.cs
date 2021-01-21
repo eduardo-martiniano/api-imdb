@@ -28,6 +28,17 @@ namespace api_imdb.Models.ViewModels
         public string Password { get; set; }
     }
 
+    public class UpdateUserViewModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public string NewPassword { get; set; }
+    }
+
     public enum TypeOfUser
     {
         USER = 0,

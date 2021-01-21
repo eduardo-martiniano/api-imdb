@@ -51,5 +51,14 @@ namespace api_imdb.Repositories
             user.Active = !user.Active;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<IdentityUser>> GetUsers(int limit, int offset)
+        {
+            return await _context.Users
+                                 .OrderBy(x => x.Email)
+                                 .Skip(offset * limit)
+                                 .Take(limit)
+                                 .ToListAsync();
+        }
     }
 }

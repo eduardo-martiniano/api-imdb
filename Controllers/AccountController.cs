@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,14 +16,14 @@ using Microsoft.IdentityModel.Tokens;
 namespace api_imdb.Controllers
 {
     [Route("account")]
-    public class AuthController : Controller
+    public class AccountController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly AppSettings _appSettings;
         private readonly IUserRepository _userRepository;
 
-        public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppSettings> appSettings, IUserRepository userRepository)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppSettings> appSettings, IUserRepository userRepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -117,6 +118,36 @@ namespace api_imdb.Controllers
             }
 
             return BadRequest("usuario ou senha invalidos");
+        }
+
+        [HttpPut]
+        [Route("update-password")]
+        public async Task<ActionResult> Update([FromBody] UpdateUserViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest("Dados invalidos");
+
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
+
+            if (!await _userRepository.UserActived(model.Email)) return NotFound("Essa conta está desativada");
+
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
+                return NoContent();
+            }
+
+            return BadRequest("usuario ou senha invalidos");
+        }
+
+        [HttpGet]
+        [Route("users")]
+        [ClaimsAuthorize("ADM", "Add")]
+        public async Task<IActionResult> GetUsers([FromQuery] int limit = 30, [FromQuery] int offset = 0)
+        {
+            var users = await _userRepository.GetUsers(limit, offset);
+            var userJson = users.Select(a => new UserJson(a)).ToList();
+            return Ok(userJson);
         }
 
         private async Task<TokenJson> GenerateJwt(string email)
