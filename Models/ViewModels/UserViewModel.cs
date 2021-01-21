@@ -30,7 +30,7 @@ namespace api_imdb.Models.ViewModels
 
     public enum TypeOfUser
     {
-        USER,
-        ADM
+        USER = 0,
+        ADM = 1
     }
 }

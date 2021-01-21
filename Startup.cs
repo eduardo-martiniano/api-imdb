@@ -75,7 +75,7 @@ namespace api_imdb
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TASK API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "IMDB API");
                 c.RoutePrefix = string.Empty;
             });
             app.UseSwagger(c =>

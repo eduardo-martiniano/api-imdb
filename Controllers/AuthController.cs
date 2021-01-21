@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using api_imdb.Configuration;
 using api_imdb.Contracts.IRepositories;
-using api_imdb.Data;
 using api_imdb.Models.Jsons;
 using api_imdb.Models.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -48,6 +44,7 @@ namespace api_imdb.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
@@ -57,12 +54,12 @@ namespace api_imdb.Controllers
                     UserId = user.Id,
                     ClaimType = model.TypeOfUser.ToString(),
                     ClaimValue = ""
-                }); 
-                
-                return Ok(await GenerateJwt(model.Email));
+                });
+
+                return StatusCode(201, await GenerateJwt(model.Email));
             }
 
-            return Ok("Algo deu errado");
+            return StatusCode(400, "Você já possui cadastro!");
         }
 
         [HttpPost]
@@ -73,17 +70,11 @@ namespace api_imdb.Controllers
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
 
-            if (result.Succeeded)
-            {
-                return Ok(await GenerateJwt(model.Email));
-            }
+            if (result.Succeeded) return StatusCode(202, await GenerateJwt(model.Email));
 
-            if (result.IsLockedOut)
-            {
-                return BadRequest("Usuario travado");
-            }
+            if (result.IsLockedOut) return BadRequest("Usuario travado");
 
-            return Ok("usuario e senha invalidos");
+            return BadRequest("usuario ou senha invalidos");
         }
 
         private async Task<TokenJson> GenerateJwt(string email)

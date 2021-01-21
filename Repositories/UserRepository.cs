@@ -20,10 +20,11 @@ namespace api_imdb.Repositories
         
         public async Task CreateClaims(IdentityUserClaim<string> userClaims)
         {
-            if(userClaims.ClaimType == TypeOfUser.ADM.ToString())
-            {
-                userClaims.ClaimValue = "Add, Update, Remove";
-            };
+            if (userClaims.ClaimType == TypeOfUser.ADM.ToString()) userClaims.ClaimValue = "Add, Update, Remove";
+
+            if (userClaims.ClaimType == TypeOfUser.USER.ToString()) userClaims.ClaimValue = "Rating";
+
+
             await _context.UserClaims.AddAsync(userClaims);
             await _context.SaveChangesAsync();
         }

@@ -33,6 +33,7 @@ namespace api_imdb.Controllers
 
         [HttpGet]
         [Route("")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] MovieQuery query)
         {
             var movies = await _movieRepository.GetAll(query);
@@ -40,22 +41,33 @@ namespace api_imdb.Controllers
             return Ok(moviesJson);
         }
 
-        [ClaimsAuthorize("ADM", "Add")]
+        [HttpGet]
+        [Route("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById([FromRoute] int id )
+        {
+            var movie = await _movieRepository.GetById(id);
+            if (movie == null) return NotFound("Filme não encontrado!");
+
+            return new MovieJson(movie);
+        }
+
         [HttpPost]
         [Route("")]
+        [ClaimsAuthorize("ADM", "Add")]
         public async Task<IActionResult> Add([FromBody] MovieViewModel model)
         {
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest("Dados invalidos!");
 
             var movie = await _movieService.CreateMovie(model);
             var movieJson = new MovieJson(movie);
 
-            return Ok(movieJson);
-
+            return StatusCode(201, movieJson);
         }
 
         [HttpPost]
         [Route("rate-movie")]
+        [ClaimsAuthorize("USER", "Rating")]
         public async Task<IActionResult> RateMovie([FromQuery] int movieId, [FromQuery] int note)
         {
             if (note < 0 || note > 4) return BadRequest("Nota invalida! Digite uma nota entre 0-4");
@@ -66,7 +78,7 @@ namespace api_imdb.Controllers
 
             await _movieService.RateMovie(movieId, note);
 
-            return Ok(new MovieJson(movie));
+            return StatusCode(202, new MovieJson(movie));
         }
     }
 }
