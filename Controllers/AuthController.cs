@@ -56,6 +56,8 @@ namespace api_imdb.Controllers
                     ClaimValue = ""
                 });
 
+                await _userRepository.AddToTableUser(user.Id);
+
                 return StatusCode(201, await GenerateJwt(model.Email));
             }
 
@@ -70,9 +72,49 @@ namespace api_imdb.Controllers
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
 
+            if (!await _userRepository.UserActived(model.Email)) return NotFound("Essa conta está desativada");
+
             if (result.Succeeded) return StatusCode(202, await GenerateJwt(model.Email));
 
             if (result.IsLockedOut) return BadRequest("Usuario travado");
+
+            return BadRequest("usuario ou senha invalidos");
+        }
+
+        [HttpDelete]
+        [Route("desactive")]
+        public async Task<ActionResult> DesactiveAccount([FromBody] LoginUserViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest("Dados invalidos");
+
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
+
+            if (!await _userRepository.UserActived(model.Email)) return NotFound("Essa conta está desativada");
+
+            if (result.Succeeded)
+            {
+                await _userRepository.DesactiveOrActiveAccount(model.Email);
+                return StatusCode(202, "Conta desativada com sucesso!");
+            }
+
+            return BadRequest("usuario ou senha invalidos");
+        }
+
+        [HttpPut]
+        [Route("active")]
+        public async Task<ActionResult> ActiveAccount([FromBody] LoginUserViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest("Dados invalidos");
+
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
+
+            if (await _userRepository.UserActived(model.Email)) return NotFound("Essa conta já está ativada!");
+
+            if (result.Succeeded)
+            {
+                await _userRepository.DesactiveOrActiveAccount(model.Email);
+                return StatusCode(202, "Conta ativada com sucesso!");
+            }
 
             return BadRequest("usuario ou senha invalidos");
         }

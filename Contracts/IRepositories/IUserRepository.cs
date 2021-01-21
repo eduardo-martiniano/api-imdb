@@ -9,5 +9,8 @@ namespace api_imdb.Contracts.IRepositories
     public interface IUserRepository
     {
         Task CreateClaims(IdentityUserClaim<string> userClaims);
+        Task AddToTableUser(string appUserId);
+        Task<bool> UserActived(string email);
+        Task DesactiveOrActiveAccount(string email);
     }
 }

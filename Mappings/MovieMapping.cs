@@ -20,7 +20,7 @@ namespace api_imdb.Mappings
 
             builder.Property(m => m.GenreName)
                    .IsRequired()
-                   .HasColumnType("varchar(15)");
+                   .HasColumnType("varchar(50)");
 
             builder.HasMany(m => m.Ratings)
                    .WithOne(r => r.Movie)
