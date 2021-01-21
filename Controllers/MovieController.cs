@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api_imdb.Configuration;
 using api_imdb.Contracts;
 using api_imdb.Models;
 using api_imdb.Models.Jsons;
 using api_imdb.Models.Queries;
 using api_imdb.Models.ViewModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_imdb.Controllers
 {
+    [Authorize]
     [Route("movies")]
     [ApiController]
     public class MovieController : Controller
@@ -37,6 +40,7 @@ namespace api_imdb.Controllers
             return Ok(moviesJson);
         }
 
+        [ClaimsAuthorize("ADM", "Add")]
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> Add([FromBody] MovieViewModel model)

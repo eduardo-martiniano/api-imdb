@@ -50,6 +50,7 @@ namespace api_imdb
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IActingRepository, ActingRepository>();
             services.AddScoped<IRatingRepository, RatingRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddControllers();
         }

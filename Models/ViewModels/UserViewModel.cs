@@ -15,6 +15,8 @@ namespace api_imdb.Models.ViewModels
         public string Password { get; set; }
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
+        [Required]
+        public TypeOfUser TypeOfUser { get; set; }
     }
 
     public class LoginUserViewModel
@@ -24,5 +26,11 @@ namespace api_imdb.Models.ViewModels
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
+    }
+
+    public enum TypeOfUser
+    {
+        USER,
+        ADM
     }
 }
