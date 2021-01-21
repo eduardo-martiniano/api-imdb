@@ -31,6 +31,12 @@ namespace api_imdb.Controllers
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Registrar-se como usuario ou administrador (0 - Usuario/ 1 - Adm)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="201">Token</response>
         [HttpPost]
         [Route("register")]
         public async Task<ActionResult> Register([FromBody] RegisterUserViewModel model)
@@ -65,6 +71,12 @@ namespace api_imdb.Controllers
             return StatusCode(400, "Você já possui cadastro!");
         }
 
+        /// <summary>
+        /// Fazer login
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="202">Token</response>
         [HttpPost]
         [Route("login")]
         public async Task<ActionResult> Login([FromBody] LoginUserViewModel model)
@@ -82,6 +94,12 @@ namespace api_imdb.Controllers
             return BadRequest("usuario ou senha invalidos");
         }
 
+        /// <summary>
+        /// Desativar conta
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="204">Token</response>
         [HttpDelete]
         [Route("desactive")]
         public async Task<ActionResult> DesactiveAccount([FromBody] LoginUserViewModel model)
@@ -95,12 +113,18 @@ namespace api_imdb.Controllers
             if (result.Succeeded)
             {
                 await _userRepository.DesactiveOrActiveAccount(model.Email);
-                return StatusCode(202, "Conta desativada com sucesso!");
+                return StatusCode(204, "Conta desativada com sucesso!");
             }
 
             return BadRequest("usuario ou senha invalidos");
         }
 
+        /// <summary>
+        /// Ativar conta
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="204">Token</response>
         [HttpPut]
         [Route("active")]
         public async Task<ActionResult> ActiveAccount([FromBody] LoginUserViewModel model)
@@ -114,12 +138,18 @@ namespace api_imdb.Controllers
             if (result.Succeeded)
             {
                 await _userRepository.DesactiveOrActiveAccount(model.Email);
-                return StatusCode(202, "Conta ativada com sucesso!");
+                return StatusCode(204, "Conta ativada com sucesso!");
             }
 
             return BadRequest("usuario ou senha invalidos");
         }
 
+        /// <summary>
+        /// Alterar senha
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="204">Token</response>
         [HttpPut]
         [Route("update-password")]
         public async Task<ActionResult> Update([FromBody] UpdateUserViewModel model)
@@ -140,6 +170,12 @@ namespace api_imdb.Controllers
             return BadRequest("usuario ou senha invalidos");
         }
 
+        /// <summary>
+        /// Obter usuarios
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="200">Token</response>
         [HttpGet]
         [Route("users")]
         [ClaimsAuthorize("ADM", "Add")]

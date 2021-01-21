@@ -17,7 +17,6 @@ namespace api_imdb.Repositories
             _context = context;
         }
 
-
         public async Task<Actor> Add(Actor actor)
         {
             await _context.Actors.AddAsync(actor);

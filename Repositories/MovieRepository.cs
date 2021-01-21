@@ -56,23 +56,6 @@ namespace api_imdb.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<Movie>> GetByFilters(string title, string genre, Actor actor, int limit, int offset)
-        {
-            var query =  _context.Movies.Include(m => m.Actings).AsQueryable();
-
-            if (!string.IsNullOrEmpty(title))
-                query = query.Include(m => m.Actings).Where(m => m.Title == title).AsQueryable();
-            
-            if (!string.IsNullOrEmpty(genre))
-                query = query.Include(m => m.Actings).Where(m => m.GenreName == genre).AsQueryable();
-            
-            // if (actor != null)
-            //     query = query.Include(m => m.Actings).Where(m => m.Actings.).AsQueryable();
-
-            return await query.Skip((offset * limit)).Take(limit).ToListAsync();
-
-        }
-
         public async Task<Movie> GetById(int id)
         {
             return await _context.Movies
@@ -81,16 +64,6 @@ namespace api_imdb.Repositories
                     .Include(m => m.Ratings)
                     .Where(m => m.Id == id)
                     .FirstOrDefaultAsync();
-        }
-
-        public async Task<Movie> Update(int id, Movie movie)
-        {
-            var _movie = await GetById(id);
-            _movie = movie;
-            _movie.Id = id;
-            await _context.SaveChangesAsync();
-
-            return _movie;
         }
 
         private async Task<Actor> GetActorByName(string name)

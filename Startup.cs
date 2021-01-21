@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using api_imdb.Configuration;
 using api_imdb.Contracts;
@@ -19,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace api_imdb
 {
@@ -34,8 +37,15 @@ namespace api_imdb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerGen();
-
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "IMDB API", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+        
             services.AddAutoMapper(typeof(Startup));
 
             services.AddDbContext<Context>(options => 
@@ -73,14 +83,12 @@ namespace api_imdb
                 endpoints.MapControllers();
             });
 
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "IMDB API");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "IMDB API");
                 c.RoutePrefix = string.Empty;
-            });
-            app.UseSwagger(c =>
-            {
-                c.SerializeAsV2 = true;
+                c.DefaultModelsExpandDepth(-1);
             });
         }
     }

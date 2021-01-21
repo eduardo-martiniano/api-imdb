@@ -9,8 +9,6 @@ namespace api_imdb.Contracts
     {
         Task<List<Movie>> GetAll(MovieQuery query);
         Task<Movie> GetById(int id);
-        Task<List<Movie>> GetByFilters(string name, string genre, Actor actor, int limit, int offset);
         Task<Movie> Add(Movie movie);
-        Task<Movie> Update(int id, Movie movie);
     }
 }

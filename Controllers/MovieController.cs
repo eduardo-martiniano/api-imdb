@@ -22,15 +22,19 @@ namespace api_imdb.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly IMovieRepository _movieRepository;
-        private readonly IMapper _mapper;
 
-        public MovieController(IMovieRepository movieRepository, IMapper mapper, IMovieService movieService)
+        public MovieController(IMovieRepository movieRepository, IMovieService movieService)
         {
             _movieRepository = movieRepository;
-            _mapper = mapper;
             _movieService = movieService;
         }
 
+        /// <summary>
+        /// Obter lista de filmes
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="200">Token</response>
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
@@ -41,6 +45,12 @@ namespace api_imdb.Controllers
             return Ok(moviesJson);
         }
 
+        /// <summary>
+        /// Obter um filme por Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="200">Token</response>
         [HttpGet]
         [Route("{id}")]
         [AllowAnonymous]
@@ -52,6 +62,12 @@ namespace api_imdb.Controllers
             return new MovieJson(movie);
         }
 
+        /// <summary>
+        /// Cadastrar um novo filme
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="201">Token</response>
         [HttpPost]
         [Route("")]
         [ClaimsAuthorize("ADM", "Add")]
@@ -65,6 +81,13 @@ namespace api_imdb.Controllers
             return StatusCode(201, movieJson);
         }
 
+        /// <summary>
+        /// Avaliar um filme
+        /// </summary>
+        /// <param name="movieId"></param>
+        /// <param name="note"></param>
+        /// <returns>Token de acesso</returns>
+        /// <response code="202">Token</response>
         [HttpPost]
         [Route("rate-movie")]
         [ClaimsAuthorize("USER", "Rating")]
